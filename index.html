@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Agente Vapi</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; background-color: #f0f0f0; }
+        #vapi-button { font-size: 1.2em; padding: 15px 30px; cursor: pointer; border: none; border-radius: 8px; background-color: #4CAF50; color: white; }
+        #vapi-button.calling { background-color: #f44336; }
+    </style>
+</head>
+<body>
+
+    <button id="vapi-button">Iniciar Chamada de Teste</button>
+
+    <script src="https://cdn.vapi.ai/web/v1/vapi.js"></script>
+
+    <script>
+        // --- CONFIGURAÇÕES ---
+        // Cole o ID do seu agente que você criou no dashboard da Vapi.
+        const ASSISTANT_ID = 'SEU_ASSISTANT_ID_DO_DASHBOARD';
+        // Cole a URL do ngrok (desta vez, a WSS é mais garantida de funcionar aqui).
+        const YOUR_NGROK_WSS_URL = 'SUA_URL_WSS_DO_NGROK'; // Ex: 'wss://a1b2-c3d4-e5f6.ngrok-free.app'
+        
+        const vapi = new Vapi('SUA_CHAVE_PUBLICA_DA_API_VAPI'); // Use a chave PÚBLICA (Public Key), não a secreta!
+        const button = document.getElementById('vapi-button');
+        let isCalling = false;
+
+        button.addEventListener('click', () => {
+            if (isCalling) {
+                vapi.stop(); // Para a chamada se já estiver acontecendo
+            } else {
+                // Inicia a chamada, passando a configuração do assistente E a URL do nosso servidor.
+                vapi.start({
+                    assistantId: ASSISTANT_ID,
+                    serverUrl: YOUR_NGROK_WSS_URL,
+                });
+            }
+        });
+
+        // Eventos para atualizar o estado do botão
+        vapi.on('call-start', () => {
+            isCalling = true;
+            button.textContent = 'Encerrar Chamada';
+            button.classList.add('calling');
+        });
+
+        vapi.on('call-end', () => {
+            isCalling = false;
+            button.textContent = 'Iniciar Chamada de Teste';
+            button.classList.remove('calling');
+        });
+    </script>
+</body>
+</html> 
